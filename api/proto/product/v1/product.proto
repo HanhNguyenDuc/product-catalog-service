@@ -1,0 +1,109 @@
+syntax = "proto3";
+
+package product.v1;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/product-catalog-service/gen/product/v1;productv1";
+
+// ── Shared message types ──────────────────────────────────────────────────────
+
+message Money {
+  int64  amount   = 1; // smallest currency unit (e.g. cents)
+  string currency = 2; // ISO-4217 code, e.g. "USD"
+}
+
+message Discount {
+  string amount_percentage          = 1;
+  google.protobuf.Timestamp starts_at = 2;
+  google.protobuf.Timestamp ends_at   = 3;
+  bool   is_active                  = 4;
+}
+
+message Product {
+  string   id              = 1;
+  string   name            = 2;
+  string   description     = 3;
+  string   category        = 4;
+  string   status          = 5;
+  Money    base_price      = 6;
+  Money    effective_price = 7;
+  Discount discount        = 8; // absent when no discount
+}
+
+// ── Service definition ────────────────────────────────────────────────────────
+
+service ProductService {
+  // Commands
+  rpc CreateProduct(CreateProductRequest)       returns (CreateProductReply);
+  rpc UpdateProduct(UpdateProductRequest)       returns (UpdateProductReply);
+  rpc ActivateProduct(ActivateProductRequest)   returns (ActivateProductReply);
+  rpc DeactivateProduct(DeactivateProductRequest) returns (DeactivateProductReply);
+  rpc ApplyDiscount(ApplyDiscountRequest)       returns (ApplyDiscountReply);
+  rpc RemoveDiscount(RemoveDiscountRequest)     returns (RemoveDiscountReply);
+
+  // Queries
+  rpc GetProduct(GetProductRequest)     returns (GetProductReply);
+  rpc ListProducts(ListProductsRequest) returns (ListProductsReply);
+}
+
+// ── Command messages ──────────────────────────────────────────────────────────
+
+message CreateProductRequest {
+  string name        = 1;
+  string description = 2;
+  string category    = 3;
+}
+message CreateProductReply {
+  string id = 1;
+}
+
+message UpdateProductRequest {
+  string id          = 1;
+  string name        = 2;
+  string description = 3;
+  string category    = 4;
+}
+message UpdateProductReply {}
+
+message ActivateProductRequest {
+  string id = 1;
+}
+message ActivateProductReply {}
+
+message DeactivateProductRequest {
+  string id = 1;
+}
+message DeactivateProductReply {}
+
+message ApplyDiscountRequest {
+  string                    id         = 1;
+  string                    percentage = 2;
+  google.protobuf.Timestamp starts_at  = 3;
+  google.protobuf.Timestamp ends_at    = 4;
+}
+message ApplyDiscountReply {}
+
+message RemoveDiscountRequest {
+  string id = 1;
+}
+message RemoveDiscountReply {}
+
+// ── Query messages ────────────────────────────────────────────────────────────
+
+message GetProductRequest {
+  string id = 1;
+}
+message GetProductReply {
+  Product product = 1;
+}
+
+message ListProductsRequest {
+  string category = 1; // optional; empty = all categories
+  int32  limit    = 2; // 0 = default (20)
+  int32  offset   = 3;
+}
+message ListProductsReply {
+  repeated Product products    = 1;
+  int32            total_count = 2;
+}
