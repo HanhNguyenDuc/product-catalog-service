@@ -7,6 +7,8 @@ This service provides product management capabilities with an event-driven archi
 - The Domain layer is trying to design follow the way that domain expert follow, also my domain layer has things called change tracking, to help reduce the cost of query make in the database (persistence layer)
 - Usecase layer include lot of things, i don't put repository implementation directly as usecase attribute, instead of that, i create usecase necessary interface, the main reason i do that is to make the usecase layer more testable, and also make it easier to switch between different database implementation, usecase also doesn't need to care about persistence layer.
 - I use Dependency Injection to manage the dependencies between layers, i use wire to generate the dependency injection code, the Dependency Injection framework I use is uber/fx, that gonna help me to reduce cost of initializing the dependencies.
+- This projects also has 2 ports, one is grpc port, another is rest port, the grpc port is the one that i have try end to end test, the rest port is just the implementation to help people who doesn't familiar with grpc.
+- I use Cloud Spanner as the database, and I use the emulator to run it locally.
 
 ## 🛠 Local Setup (Spanner Emulator)
 
